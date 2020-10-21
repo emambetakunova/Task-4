@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <div id="container">
+        <input id="input" type="text" />
+        <button id="button">Search</button>
+    </div>
+
+<script>
+  function getValueInput() {
+    let value = document.getElementById('input').value;
+    return value
+  }
+
+  async function getGifyUrls(query) {
+    const urls = []
+    const url = `http://api.giphy.com/v1/gifs/search?q=${query}&api_key=oDcp5HCS9fDpdezyZmcWiTH3dEhP9RcX&limit=5`
+    let response = await fetch(url);
+    if (response.ok) {
+      let results = await
+      response.json();
+      results.data.forEach(r => {
+        urls.push(r.images.downsized_medium.url)
+      })
+    }
+    return urls
+  }
+
+  function render(urls) {
+    const container = document.getElementById('container');
+    urls.forEach(url => {
+        const img = document.createElement('img');
+        img.src = url;
+        const div = document.createElement('div');
+        div.className = 'gifs'
+        div.appendChild(img)
+        container.appendChild(div)
+    })
+  }
+
+  function clear() {
+    const removeGifs = document.getElementsByClassName('gifs')
+    let array = Array.from(removeGifs)
+    if (array.length > 0) {
+      array.forEach(r => {
+        r.remove()
+      })
+    }
+  }
+
+  async function clickHandler() {
+    clear()
+    const inputValue = getValueInput()
+    const urls = await getGifyUrls(inputValue)
+    render(urls)
+  }
+
+  async function main() {
+    const button = document.getElementById('button');
+    button.addEventListener('click', clickHandler);
+  }
+
+  main()
+</script>
+</body>
+</html>
